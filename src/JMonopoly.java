@@ -1,37 +1,26 @@
 public class JMonopoly 
 {
-	//Monopoly 0.2
+	//Monopoly 0.3
 	//DATOS
-	static String tablero[][]=new String[11][11];	//Tablero
 	static Casillas arrayCasillas[]=new Casillas[40];	//Donde guardamos todas las casillas del jugeo con sus respectivos datos
 	static Jugador arrayJugadores[];	//Donde guardaremos a todos los jugadores, el tamaño lo definiremos en el metodo mejor
 	static Dados d6 = new Dados(6);	//El dado que lanzamos
-	//NOTAS:
-	//Que los turnos se ordenen por un lanzamiento de dados de mayor a menor al principio de la partida
-	//Si un jugador saca dobles vuelve a tirar, a si saca dobles 3 veces va directo a la carcel
-	//Metodo que compruebe si un jugador tiene todas las propiedades de un color
-	//si tienes todas las propiedades de un color el alquiler es el doble
-	//Si caes en carcel puedes: Pagar 50€ de multa y salir de la carcel el proximo turno
-	//Comprar una carta de queda libre de la carcel
-	//usar tu carta de queda libre
-	//Esperar 3 turnos
-	//Solo puedes poner max 4 casas por propiedad
-	//Metodo que muestre todas las propiedades de un grupo
-	//Agregar a muestraPropiedades tamben el color
-	//Solo puedes poner hoteles si tiens 4 casas y solo puedes crear max un hotel
-	//Cuando pones el hotel pierdes las 4 casas 
-	//Si hipotecas un hotel lo pierdes a cambio de poner 4 casas y recibir la mitad de su valor
-	//Puedes vender una propiedad hipotecada a un jugador
-	//Si caes en un alquiler o tienes que pagar y no tienes dinero suficiente que te pregunte si deseas hipotecar/vender
-	//Para levantar la hipoteca tienes que pagar el valo de la hipoteca + 10%
-	//Si un jugador tiene saldo negativo que se le obligue a quedarse en su turno hasta que pueda pagar la deuda o se declare en bancarrota
-	
+	/*TODO:
+	*Que los turnos se ordenen por un lanzamiento de dados de mayor a menor al principio de la partida
+	*Si un jugador saca dobles vuelve a tirar, a si saca dobles 3 veces va directo a la carcel
+	*Si caes en carcel puedes: Pagar 50€ de multa y salir de la carcel el proximo turno
+	*Comprar una carta de queda libre de la carcel
+	*usar tu carta de queda libre
+	*Esperar 3 turnos
+	*Metodo que muestre todas las propiedades de un grupo
+	*Si caes en un alquiler o tienes que pagar y no tienes dinero suficiente que te pregunte si deseas hipotecar/vender
+	*Para levantar la hipoteca tienes que pagar el valo de la hipoteca + 10%
+	*Si un jugador tiene saldo negativo que se le obligue a quedarse en su turno hasta que pueda pagar la deuda o se declare en bancarrota
+	*/
 	public static void main(String[] args) 
 	{
 		creaJugadores();
 		creaCasillas();
-		inicializaTablero();
-		enumeraTablero();
 		juego();
 	}
 	
@@ -94,39 +83,6 @@ public class JMonopoly
 		arrayCasillas[38]=new Casillas("PropiedadPrueba15", 500, "Verde");
 		arrayCasillas[39]=new Casillas("PropiedadPrueba16", 500, "Verde");
 	}
-	static public void inicializaTablero() 
-	{
-		//inicializamos el tablero con espacios en blanco
-		for(int i=0; i<tablero.length; i++)
-			for(int j=0; j<tablero.length; j++)
-				tablero[i][j]="";
-	}
-	static public void enumeraTablero() 
-	{
-		//Enumeramos todas las casilas del tablero
-		int numCasilla=-1;
-
-		for(int i=0; i<tablero.length; i++) 
-		{
-			numCasilla++;
-			tablero[0][i]="[ "+numCasilla+" ]";
-		}
-		for(int i=1; i<tablero.length; i++) 
-		{
-			numCasilla++;
-			tablero[i][10]="[ "+numCasilla+" ]";
-		}
-		for(int i=9; i>=0; i--) 
-		{
-			numCasilla++;
-			tablero[10][i]="[ "+numCasilla+" ]";
-		}
-		for(int i=9; i>0; i--)
-		{
-			numCasilla++;
-			tablero[i][0]="[ "+numCasilla+" ]";
-		}
-	}
 	//JUEGO
 	static public void juego() 
 	{
@@ -135,14 +91,13 @@ public class JMonopoly
 		
 		while(!victoria) 
 		{
-			System.out.println(turnoJugador);
 			muestraTablero();
 			
 			System.out.println("Es el turno de: "+arrayJugadores[turnoJugador].getNombre());
 			
 			arrayJugadores[turnoJugador].adelantaPosicion(lanzaDados());
-			
 			int casillaActual=arrayJugadores[turnoJugador].getPosicion();	//Realmente este paso sobra pero lo pongo para facilitar lectura de cod
+			
 			pagaAlquiler(casillaActual, turnoJugador);
 			muestraInfoJugador(turnoJugador);
 			muestraInfoCasilla(casillaActual);
@@ -181,6 +136,8 @@ public class JMonopoly
 			System.out.println("[5] Hipotecar estructuras");	
 			System.out.println("[6] Hipotecar propiedad");
 			System.out.println("[7] Comprar otra propiedad");	
+			System.out.println("[8] Ver las propiedades de un jugador");
+			System.out.println("[9] Pagar hipotecas");
 			int accion=Leer.datoInt();
 			
 			switch(accion) 
@@ -197,7 +154,8 @@ public class JMonopoly
 					compraCasilla(posicion, jugador);
 				break;
 			case 3:
-				muestraPropiedades(jugador);
+				String nombreJugador=arrayJugadores[jugador].getNombre();
+				muestraPropiedades(nombreJugador);
 				break;
 			case 4:
 				System.out.println("Donde deseas crear la estructura?");
@@ -219,13 +177,23 @@ public class JMonopoly
 				casilla=Leer.datoInt();
 				compraCasilla(casilla, jugador);
 				break;
+			case 8:
+				System.out.println("Inserta el nombre del jugador");
+				String nombre=Leer.dato();
+				muestraPropiedades(nombre);
+				break;
+			case 9:
+				System.out.println("Que propiedad deseas pagar?");
+				casilla=Leer.datoInt();
+				pagaHipoteca(casilla, jugador);
+				break;
 			default:
 				finTurno=true;
 			}	
 		}
 	}
 	//COMPRA
-	public static void compraCasilla(int posicion, int jugador)
+	public static void compraCasilla(int posicion, int jugador)	//Generico
 	{
 		//Variables para facilitar la lectura
 		String propietario=arrayCasillas[posicion].getPropietario();
@@ -246,15 +214,12 @@ public class JMonopoly
 			else
 				System.out.println("No tienes los suficientes dineros en tu cartera");
 		}
-		else if(propietario==nombreJugador)
-		{
-			System.out.println("Esta propiedad ya te pertenece");
-		}
-		else
+		else if(propietario!=nombreJugador && propietario!="Banca")
 		{
 			System.out.println("El jugador "+nombreJugador+" quiere comprar esta propiedad");
 			System.out.println(propietario+" quieres vender esta propiedad a "+nombreJugador+" ? (s/n)");
 			char conf=Leer.datoChar();
+			
 			System.out.println("Cuanto quieres cobrar por esta propiedad ?");
 			precioCasilla=Leer.datoDouble();
 			
@@ -269,6 +234,10 @@ public class JMonopoly
 					System.out.println("No tienes los suficientes dineros en tu cartera");
 			}
 		}
+		else if(propietario==nombreJugador)
+			System.out.println("Esta propiedad ya te pertenece");
+		else
+			System.out.println("No puedes comprar esa propiedad");
 	}
 	public static void compraEstructura(int posicion, int jugador) 
 	{
@@ -284,10 +253,14 @@ public class JMonopoly
 		String nombreJugador=arrayJugadores[jugador].getNombre();
 		double valorCasa=arrayCasillas[posicion].getValorCasa();
 		double valorHotel=arrayCasillas[posicion].getValorHotel();
+		double dineroJugador=arrayJugadores[jugador].getDineros();
+		int numCasas=arrayCasillas[posicion].getCasas();
+		int numHoteles=arrayCasillas[posicion].getHoteles();
+		boolean hipotecada=arrayCasillas[posicion].getHipoteca();
 		
 		if(propietario!=nombreJugador)
 			System.out.println("No puedes crear estructuras en una propiedad de "+propietario);
-		else 
+		else if(!hipotecada)
 		{
 			System.out.println("[1] Comprar una casa ("+valorCasa+")");
 			System.out.println("[2] Comprar un hotel ("+valorHotel+")");
@@ -296,43 +269,74 @@ public class JMonopoly
 			switch(opcion) 
 			{
 			case 1:
-				System.out.println("Cuantas casas quieres comprar?");
-				num=Leer.datoInt();
-				coste=valorHotel*num;
-				System.out.println("El coste total seria: "+coste+" estas seguro? (s/n)");
-				conf=Leer.datoChar();
-				if(conf=='s')
+				if(numHoteles==0)
 				{
-					if(arrayJugadores[jugador].getDineros()>=coste) 
+					if(numCasas<4) 
 					{
-						arrayJugadores[jugador].restaDineros(coste);
-						arrayCasillas[posicion].agregaCasas(num);
-					}	
+						System.out.println("Cuantas casas quieres comprar?");
+						num=Leer.datoInt();
+						
+						if((numCasas+num)<=4)
+						{
+							coste=valorCasa*num;
+							System.out.println("El coste total seria: "+coste+" estas seguro? (s/n)");
+							conf=Leer.datoChar();
+							
+							if(conf=='s')
+							{
+								if(dineroJugador>=coste) 
+								{
+									arrayJugadores[jugador].restaDineros(coste);
+									arrayCasillas[posicion].agregaCasas(num);
+								}	
+								else
+									System.out.println("No tienes los dineros suficientes para hacer eso");
+							}					
+						}
+						else
+							System.out.println("No puedes tener mas de 4 casas por propiedad");
+					}
 					else
-						System.out.println("No tienes los dineros suficientes para hacer eso");
+						System.out.println("Ya tienes demasiadas casas en esa propiedad");
 				}
+				else
+					System.out.println("No puedes construir casas donde tienes un hotel");
+
 				break;
 				
 			case 2:
-				System.out.println("Cuantos hoteles quieres comprar?");
-				num=Leer.datoInt();
-				coste=arrayCasillas[posicion].getValorHotel()*num;
-				System.out.println("El coste total seria: "+coste+" estas seguro? (s/n)");
-				conf=Leer.datoChar();
-				if(conf=='s')
+				if(numCasas==4)
 				{
-					if(arrayJugadores[jugador].getDineros()>=coste) 
+					if(numHoteles==0)
 					{
-						arrayJugadores[jugador].restaDineros(coste);
-						arrayCasillas[posicion].agregaHoteles(num);
-					}					
+						System.out.println("Cuantos hoteles quieres comprar?");
+						System.out.println("El coste total seria: "+valorHotel+" estas seguro? (s/n)");
+						conf=Leer.datoChar();
+						if(conf=='s')
+						{
+							if(dineroJugador>=valorHotel) 
+							{
+								arrayJugadores[jugador].restaDineros(valorHotel);
+								arrayCasillas[posicion].agregaHoteles(1);
+								arrayCasillas[posicion].quitaCasas(4);
+							}
+							else
+								System.out.println("No tienes los dineros suficientes para hacer eso");
+						}						
+					}
+					else
+						System.out.println("Ya tienes un hotel en esta posicion");
 				}
+				else
+					System.out.println("Necesitas tener 4 casas para comprar un hotel");
 				break;
 				
 			default:
 				System.out.println("");
 			}
 		}
+		else
+			System.out.println("No puedes construir estructuras en una casa hipotecada");
 	}
 	//MUESTRA
 	public static void muestraInfoCasilla(int posicion) 
@@ -368,27 +372,55 @@ public class JMonopoly
 		System.out.println("Dineros en cartera: "+arrayJugadores[jugador].getDineros());
 		System.out.println("Posicion: "+arrayJugadores[jugador].getPosicion());
 	}
-	public static void muestraPropiedades(int jugador) 
+	public static void muestraPropiedades(String nombreJugador) 
 	{
 		//Muestra las propiedades del jugador que le indicamos
-		String nombreJugador=arrayJugadores[jugador].getNombre();
+		
 		System.out.println("");
 		System.out.println(nombreJugador+" es dueño de: ");
+		
 		for(int i=0; i<arrayCasillas.length; i++) 
-			if(arrayCasillas[i].getPropietario()==nombreJugador)
-				System.out.println("["+i+"] "+arrayCasillas[i].getNombre());
+		{
+			String propietario=arrayCasillas[i].getPropietario();
+			String color=arrayCasillas[i].getColorGrupo();
+			
+			if(propietario==nombreJugador)
+				System.out.println("["+i+"] "+arrayCasillas[i].getNombre()+" ("+color+")");
+		}
 	}
 	static public void muestraTablero() 
 	{
-		for(int i=0; i<tablero.length; i++) 
+		int numCasilla=0;
+		
+		//Imprime la primera fila de casillas
+		for(int i=0; i<11; i++)	
 		{
-			for(int j=0; j<tablero[0].length; j++) 
-				System.out.print(tablero[i][j]+"\t");
-			System.out.println("");
+			System.out.print("["+numCasilla+"] \t");
+			numCasilla++;
 		}
+		System.out.println("");
+		
+		//Imprime las columnas
+		int numCasillaParalelo=numCasilla+28;
+		for(int i=0; i<11; i++) 
+		{
+			
+			System.out.println("["+numCasillaParalelo+"] \t \t \t \t \t \t \t \t \t \t["+numCasilla+"]");	
+			numCasilla++;
+			numCasillaParalelo--;
+		}
+		
+		//Imprime la fila de abajo
+		numCasilla+=10;
+		for(int i=0; i<11; i++)
+		{
+			System.out.print("["+numCasilla+"] \t");
+			numCasilla--;
+		}
+		
+		System.out.println("");
 	}	
 	//HIPOTECAR
-	//Agregar la condicion de que si ya estan siendo hipotecadas que no puedas hipotecar la propiedad 
 	public static void hipotecarEstructura(int posicion, int jugador) 
 	{
 		//DATOS
@@ -403,10 +435,11 @@ public class JMonopoly
 		double valorHipotecarHotel=(arrayCasillas[posicion].getValorHotel()/2);
 		int numCasas=arrayCasillas[posicion].getCasas();
 		int numHoteles=arrayCasillas[posicion].getHoteles();
+		boolean hipotecada=arrayCasillas[posicion].getHipoteca();
 		
 		if(propietario!=nombreJugador)
-			System.out.println("No puedes hipotecar estructuras de: "+propietario);
-		else 
+			System.out.println("No puedes hipotecar estructuras de "+propietario);
+		else if(!hipotecada)
 		{
 			System.out.println("[1] Hipotecar una casa ("+valorHipotecarCasa+")");
 			System.out.println("[2] Hipotecar un hotel ("+valorHipotecarHotel+")");
@@ -433,27 +466,27 @@ public class JMonopoly
 				break;
 				
 			case 2:
-				System.out.println("Cuantas hoteles quieres hipotecar?");
-				num=Leer.datoInt();
-				if(num<=numHoteles)
+				if(numHoteles==1)
 				{
-					ganancia=valorHipotecarHotel*num;
-					System.out.println("La ganancia total seria: "+ganancia+" estas seguro? (s/n)");
+					System.out.println("La ganancia total seria: "+valorHipotecarHotel+" estas seguro? (s/n)");
 					conf=Leer.datoChar();
 					if(conf=='s')
 					{
-						arrayJugadores[jugador].sumaDineros(ganancia);
-						arrayCasillas[posicion].quitaHoteles(num);
-					}					
+						arrayJugadores[jugador].sumaDineros(valorHipotecarHotel);
+						arrayCasillas[posicion].quitaHoteles(1);
+						arrayCasillas[posicion].agregaCasas(4);
+					}		
 				}
 				else
-					System.out.println("Solo tienes "+numHoteles);
+					System.out.println("No tienes ningun hotel para hipotecar");
 				break;
 				
 			default:
 				System.out.println("");
 			}
 		}
+		else
+			System.out.println("No puedes hipotecar una casa que ya esta hipotecada");
 	}
 	public static void hipotecarPropiedad(int posicion, int jugador) 
 	{
@@ -486,6 +519,26 @@ public class JMonopoly
 			else
 				System.out.println("No puedes hipotecar una propiedad con estructuras");
 		}
+	}
+	public static void pagaHipoteca(int posicion, int jugador) 
+	{
+		boolean hipotecada=arrayCasillas[posicion].getHipoteca();
+		double costeHipoteca=arrayCasillas[posicion].getValorCasilla()/2;
+		double pagoTotal=costeHipoteca+(costeHipoteca*0.1);
+		double dineroJugador=arrayJugadores[jugador].getDineros();
+		
+		if(hipotecada)
+		{
+			if(dineroJugador>=pagoTotal)
+			{
+				arrayJugadores[jugador].restaDineros(pagoTotal);
+				arrayCasillas[posicion].setHipoteca(false);
+			}
+			else
+				System.out.println("No tienes los dineros suficientes");
+		}
+		else
+			System.out.println("Esta propiedad no esta hipotecada");
 	}
 	//Alquiler
 	public static void pagaAlquiler(int posicion, int jugador) 
@@ -531,4 +584,3 @@ public class JMonopoly
 		return tieneGrupo;
 	}
 }
-
