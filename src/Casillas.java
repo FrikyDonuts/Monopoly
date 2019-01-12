@@ -1,33 +1,42 @@
 class Casillas 
 {
-	private static int numCasilla=0;	//No puede ser statica pero no statica tampoco me vale porque serian todos 1
+	//Variables que dependen de los argumentos del constructor
 	private String nombreCasilla;
-	private int valorCasilla;	//Precio para comprar la propiedad o lo que sea
-	private String tipoCasilla;	//Pueden ser casillas de carta, efecto, propiedades. De momento solo trabajamos con propiedades
-	private String propietario;
-	private int efectoCasilla;//Programaremos una lista de metodos efectos y un metodo que compruebe el num, depende del num llamara a uno u otro
+	private int valorCasilla;	//Precio de comprar
+	private String tipoGrupo;	//Grupo de propiedades: Estacion, Servicio o color
+	private String tipoCasilla; //Pueden ser casillas de comunidad/suerte, efecto o propiedades
+	private int efectoCasilla;	//Un numero que tienen asignado un efectos, la lista de efectos esta en JMonopoly.java
+	private double cantidadEfecto;	//Guarda la cantidad de pasos o dinero que se usa en los efectos
+	//Si el grupo es de un color u otro se ajusta el valor de la casa, hotel y alquiler	
 	private double valorCasa;
 	private double valorHotel;
+	private double precioAlquiler;	
+	//Variables que se inicializan en el constructor
+	private String propietario;
 	private int numCasas;
 	private int numHoteles;
 	private boolean hipotecada;
-	private String colorGrupo;//Si el grupo es de un color u otro se ajusta el valor de la casa, el valor del hotel, el porcentaje alquiler y rentas por casa
-	private double precioAlquiler;	//Porcentaje del valor que pagara
+	static private int totalAzules=0;
 	static private int totalRojos=0;	
 	static private int totalVerdes=0;
-	static private int totalAzules=0;
+	static private int totalMarrones=0;
+	static private int totalRosas=0;
+	static private int totalNaranjas=0;
+	static private int totalAmarillos=0;
+	static private int totalNegros=0;
+	static private int totalEstaciones=0;
 	
-	Casillas(String nombre, int valor, String color)
+	Casillas(String nombre, int valor, String grupo)
 	{
 		nombreCasilla=nombre;
 		valorCasilla=valor;
-		colorGrupo=color;
+		tipoGrupo=grupo;
 		tipoCasilla="Propiedad";
 		propietario="Banca";
 		hipotecada=false;
 		numCasas=0;
 		numHoteles=0;
-		switch(colorGrupo)
+		switch(tipoGrupo)
 		{
 		case "Azul":
 			totalAzules++;
@@ -47,16 +56,60 @@ class Casillas
 			valorHotel=400;
 			precioAlquiler=0.2*valorCasilla;
 			break;
+		case "Marron":
+			totalMarrones++;
+			valorCasa=350;
+			valorHotel=700;
+			precioAlquiler=0.25*valorCasilla;
+			break;
+		case "Rosa":
+			totalRosas++;
+			valorCasa=400;
+			valorHotel=800;
+			precioAlquiler=0.3*valorCasilla;
+			break;
+		case "Naranja":
+			totalNaranjas++;
+			valorCasa=450;
+			valorHotel=900;
+			precioAlquiler=0.3*valorCasilla;
+			break;
+		case "Amarillo":
+			totalAmarillos++;
+			valorCasa=500;
+			valorHotel=1000;
+			precioAlquiler=0.35*valorCasilla;
+			break;
+		case "Negro":
+			totalNegros++;
+			valorCasa=600;
+			valorHotel=1200;
+			precioAlquiler=0.4*valorCasilla;
+			break;
+		case "Estacion":
+			totalEstaciones++;
+			precioAlquiler=0.125*valorCasilla;
+			break;
+		case "Servicio":
+			totalEstaciones++;
+			precioAlquiler=0.125*valorCasilla;
+			break;
 		default:
-			System.out.println("COLOR NO ASIGNADO");
+			System.out.println("GRUPO NO ASIGNADO");
 		}
 
 	}
-	Casillas(String nombre, int efecto)
+	Casillas(String nombre, String tipo)
 	{
 		nombreCasilla=nombre;
+		tipoCasilla=tipo;
+	}
+	Casillas(String nombre, int efecto, double cantidad)
+	{
 		tipoCasilla="Efecto";
+		nombreCasilla=nombre;
 		efectoCasilla=efecto;
+		cantidadEfecto=cantidad;
 	}
 	
 	//Propietario
@@ -76,11 +129,6 @@ class Casillas
 	public String getNombre()
 	{
 		return this.nombreCasilla;
-	}
-	//Misc
-	public int getNumCasilla() 
-	{
-		return numCasilla;
 	}
 	//Casilla
 	public int getValorCasilla() 
@@ -142,32 +190,42 @@ class Casillas
 		return this.precioAlquiler;
 	}
 	//Grupo
-	public String getColorGrupo() 
+	public String getGrupo() 
 	{
-		return this.colorGrupo;
+		return this.tipoGrupo;
 	}
-	public int getTotalColor(String color) 
+	public int getTotalGrupo(String grupo) 
 	{
 		int total=0;
 		
-		if(color=="Azul")
+		if(grupo=="Azul")
 			total=totalAzules;
-		if(color=="Rojo")
+		if(grupo=="Rojo")
 			total=totalRojos;
-		if(color=="Verde")
+		if(grupo=="Verde")
 			total=totalVerdes;
+		if(grupo=="Rosa")
+			total=totalRosas;
+		if(grupo=="Marron")
+			total=totalMarrones;
+		if(grupo=="Naranja")
+			total=totalNaranjas;
+		if(grupo=="Amarillo")
+			total=totalAmarillos;
+		if(grupo=="Negro")
+			total=totalNegros;
+		if(grupo=="Estacion")
+			total=totalEstaciones;
 		
 		return total;
 	}
-	//Efectos
-	/*Lista de efectos:
-	 * 1: Avanzas x pasos
-	 * 2: Retrocedes x pasos
-	 * 3: Pagar a banca
-	 * 4: Pagar a jugador/es
-	 * 5: Recibir diner de jugador/es
-	 * 6: Recibir dinero banca
-	 * 7: Ir a la carcel ->Si retrocedes o vas a la carcel no cuentan los 200€ de salida
-	 * 8: Salir de la carcel -> Esta carta te la puedes quedar 
-	 */
+	//Efecto
+	public int getEfecto() 
+	{
+		return efectoCasilla;
+	}
+	public double getNum() 
+	{
+		return cantidadEfecto;
+	}
 }

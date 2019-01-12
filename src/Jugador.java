@@ -3,18 +3,20 @@ public class Jugador
 	private String nombre;
 	private double cartera;
 	private int posicion;
+	private int turnosCarcel;
+	private boolean bancarrota;
+	//Aqui guardamos el num de la carta de suert/com en caso de que el jugador la tenga
+	//Los inicializamos a -1 porque hay una carta 0
+	private int carcelSuerte=-1;	
+	private int carcelComunidad=-1;
 	
-	Jugador(String nombreJugador, double dineroInicial)
-	{
-		nombre=nombreJugador;
-		cartera=dineroInicial;
-		posicion=0;
-	}
 	Jugador(String nombreJugador)
 	{
 		nombre=nombreJugador;
 		cartera=100000;
 		posicion=0;
+		turnosCarcel=0;
+		bancarrota=false;
 	}
 	
 	//Dineros
@@ -39,7 +41,7 @@ public class Jugador
 	{
 		this.posicion=casilla;
 	}
-	public void adelantaPosicion(int casillas) 
+	public void adelantaPosicion(int casillas)
 	{
 		if((casillas+this.posicion)>=40)	//Si el jugador se pasa del 39 le dara una vuelta al tablero 
 		{	
@@ -56,7 +58,7 @@ public class Jugador
 		}
 		this.posicion+=casillas;
 	}
-	public void regresaPosicion(int casillas) 
+	public void regresaPosicion(int casillas)	//TODO: Que si le toca retroceder x casillas y al bajar de 0 pase a 39,38,37...
 	{
 		this.posicion-=casillas;
 	}
@@ -65,6 +67,55 @@ public class Jugador
 	{
 		return nombre;
 	}
-	//Otro metodo que dependiendo del string que pase: Inicio/Carcel/etc lo mande a una posicion especifica
-	
+	//Carcel
+	public int getTurnosCarcel() 
+	{
+		return this.turnosCarcel;
+	}
+	public void setTurnosCarcel(int turnos) 
+	{
+		this.turnosCarcel = turnos;
+	}
+	public void sumaTurnosCarcel(int turnos) 
+	{
+		this.turnosCarcel+=turnos;
+	}
+	public void restaTurnosCarcel(int turnos) 
+	{
+		this.turnosCarcel-=turnos;
+	}	
+	//Bancarrota
+	public void setBancarrota(boolean Bancarrota)
+	{
+		this.bancarrota=Bancarrota;
+	}
+	public boolean getBancarrota() 
+	{
+		return this.bancarrota;
+	}
+	//CartasCarcel
+	public void agregaCartaSuerte(int numCarta) 
+	{
+		this.carcelSuerte=numCarta;
+	}
+	public void quitaCartaSuerte() 
+	{
+		this.carcelSuerte=-1;
+	}
+	public int getCartaSuerte() 
+	{
+		return carcelSuerte;
+	}
+	public void agregaCartaComunidad(int numCarta) 
+	{
+		this.carcelSuerte=numCarta;
+	}
+	public void quitaCartaComunidad() 
+	{
+		this.carcelSuerte=-1;
+	}
+	public int getCartaComunidad() 
+	{
+		return carcelComunidad;
+	}
 }

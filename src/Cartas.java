@@ -1,9 +1,44 @@
-public class Cartas {
-	//Podriamos crear un contructor con de cartas, con un efecto y un titulo 
-	//Creamos un array co todas las cartas y sus efectos entre 0-15 y cuando el jugador caiga en arrayCasilla[posicion].getTipo=="Carta"
-	//Tendriamos que crear un array mazo de cartas con los numeros del 0-15 y cuando uno salga del math.rnd que lo saque
-	//O que cuando saque una carta la vuelva a meter al mazo y baraje, por lo que no tendria que ver hacer lo anterior
-	//Coge una carta al azar del array de carta 
+public class Cartas 
+{	
+	//Los efectos funcionan igual que los de Casillas.java
+	private boolean duenho;
+	private String tituloCarta;
+	private int efectoCarta;
+	private double num;
 	
-	//Creariamos dos arrays de cartas: cartasComunidad y cartasSuerte
+	Cartas(int efecto, int cantidad, String titulo)	
+	{
+		tituloCarta=titulo;
+		efectoCarta=efecto;
+		num=cantidad;
+		duenho=false;
+	}
+	Cartas(int efecto, String titulo) //Para las cartas que tienen un efecto "fijo" por ejemplo: ve a la carcel
+	{
+		tituloCarta=titulo;
+		efectoCarta=efecto;
+		duenho=false;
+	}
+	
+	public double getNum() 
+	{
+		return this.num;
+	}
+	public String getTituloCarta() 
+	{
+		return this.tituloCarta;
+	}
+	public int getEfecto()
+	{
+		return this.efectoCarta;
+	}
+	public boolean getDuenho() 
+	{
+		return duenho;
+	}
+	public void setDuenho(boolean duenho) 
+	{
+		this.duenho = duenho;
+	}
+
 }
